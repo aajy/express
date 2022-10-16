@@ -1,17 +1,26 @@
+const express = require('express');
 const mysql = require('mysql');
-const connection = mysql.createConnection({
-    host : 'localhost',
-    user : 'root',
-    password : 'Aajy8094!@',
-    database : 'my_db'
+const dbconfig = require('./config/database.js');
+const connection = mysql.createConnection(dbconfig);
+
+const app = express();
+
+//configuration ==================
+app.set('port',process.env.PORT ||3000);
+
+app.get('/', (req, res)=>{
+    res.send('Root');
 });
 
-connection.connect();
-
-connection.query('SELECT * FROM Users', (error, rows, fields) => {
-    if (error) throw error;
-    console.log('Users info is: ', rows);
+app.get('/users', (req,res)=> {
+    connection.query('SELECT * from Users', (error, rows)=> {
+        if (error) throw error;
+        console.log('User database is ', rows);
+        res.send(rows);
+    });
 });
 
-connection.end();
+app.listen(app.get('port'), () => {
+    console.log('Express server listening on port '+ app.get('port'));
+});
 
