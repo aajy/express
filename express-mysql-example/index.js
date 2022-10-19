@@ -1,19 +1,18 @@
 const express = require('express');
 const mysql = require('mysql');
-const { password } = require('./library/database.js');
 const dbconfig = require('./library/database.js');
 const connection = mysql.createConnection(dbconfig);
 
 const app = express();
 
-connection.connect();
+// connection.connect();
 //configuration ==================
 app.set('port',process.env.PORT ||3000);
 
 app.get('/', (req, res)=>{
     res.send('Root');
 });
-
+// 조회
 app.get('/users', (req,res)=> {
     connection.query('SELECT * from users', (error, rows)=> {
         console.log('User database is ', rows);
@@ -21,26 +20,42 @@ app.get('/users', (req,res)=> {
     });
 });
 
-app.get('/api/posts/:year/:month',(req, res) => {
-    res.send(req.params);
-})
-
-const courses = [
-    { id: 'aaa', password: '1111'},
-    { id: 'bbb', password: '2222'},
-    { id: 'ccc', password: '3333'},
-];
-const sql = ''
-
-app.get("/api/courses", (req, res) => {
-    connection.query(sql, (error, rows)=> {
-        res.send(courses);
+// 생성
+app.post("/users/create", (req, res) => {
+    const insertSql = `INSERT INTO users(id, password, age) VALUES('aaa','1111',20)`
+    console.log('req',req.params);
+    connection.query(insertSql, (error, rows)=> {
+        if(error) console.log(error);
+        res.send(rows);
     });
-    connection.end();
-})
+    // connection.end();
+});
+
+// 수정
+app.put("/users/update", (req, res) => {
+    const insertSql = `UPDATE users(id, password, age) VALUES('aaa','1111',20)`
+    console.log('req',req.params);
+    connection.query(insertSql, (error, rows)=> {
+        if(error) console.log(error);
+        res.send(rows);
+    });
+    // connection.end();
+});
+
+// 삭제
+app.delete("/users/delete", (req, res) => {
+    const insertSql = `INSERT INTO users(id, password, age) VALUES('aaa','1111',20)`
+    console.log('req',req.params);
+    connection.query(insertSql, (error, rows)=> {
+        if(error) console.log(error);
+        res.send(rows);
+    });
+    // connection.end();
+});
+
 
 app.listen(app.get('port'), () => {
     console.log('Express server listening on port '+ app.get('port'));
 });
 
-
+module.exports = connection;
