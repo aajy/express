@@ -1,8 +1,8 @@
 const express = require('express');
-const mysql = require('mysql');
-const dbconfig = require('./config/config.js');
+// const mysql = require('mysql');
+// const dbconfig = require('./config/config.js');
 
-// const connect = require('./module/connection.js');
+const connect = require('./module/connection.js');
 
 const app = express();
 
