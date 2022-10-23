@@ -5,8 +5,9 @@ const express = require('express');
 const connect = require('./module/connection.js');
 
 const app = express();
-
+// Parse requests of content-type: application/json
 app.use(express.json());
+// Parse requests of content-type: application/x-www-form-urlencoded
 app.use(express.urlencoded({extended: true}));
 
 //configuration ==================
@@ -17,96 +18,16 @@ app.get('/', (req, res)=>{
 });
 
 // 조회
-app.get('/users', (req,res)=> {
-  const connection = mysql.createConnection(dbconfig);
-  connection.connect(function(error) {
-    if(!error) {
-      console.log('Database is connected ... nn');
-    } else {
-      console.log('Error connecting databases ... nn' + error);
-    }
-
-    connection.query('SELECT * from users', (error, rows)=> {
-      if(error) console.log(error);
-      res.send(rows);
-      connection.end();
-    });
-  });
-});
+app.get('/users', connect.select);
 
 // 생성
-app.post("/users", (req, res) => {
-    const connection = mysql.createConnection(dbconfig);
-    connection.connect(function(error) {
-        if(!error) {
-            console.log('Database is connected ... nn');
-        } else {
-            console.log('Error connecting databases ... nn' + error);
-        }
-
-        const insertSql = `INSERT INTO users (id, password, age) VALUES ("${req.body.id}","${req.body.password}",${req.body.age? req.body.age : null})`
-        connection.query(insertSql, (error, rows)=> {
-            if(error) console.log(error);
-            res.send(rows);
-            connection.end();
-        });
-    });
-});
+app.post("/users", connect.insert);
 
 // 수정
-app.put("/users/:seq", (req, res) => {
-  let seq = req.params.seq;
-  let _strBody = JSON.stringify(req.body)
-  _strBody = _strBody.replace(/:/gi, '=');
-  _strBody = _strBody.replace(/{|}/gi, '');
-
-  let strBody = '';
-  let _tempArr = _strBody.split(',');
-  for (let item of _tempArr) {
-    strBody += item.split("=")[0].replace(/"/gi, '');
-    strBody += "=";
-    strBody += item.split("=")[1];
-    strBody += ',';
-  }
-
-  strBody = strBody.slice(0, strBody.length -1);
-  console.log('strBody: ', strBody);
-  const connection = mysql.createConnection(dbconfig);
-  connection.connect(function(error) {
-    if(!error) {
-      console.log('Database is connected ... nn');
-    } else {
-      console.log('Error connecting databases ... nn' + error);
-    }
-
-    const insertSql = `UPDATE users SET ${strBody} WHERE seq = ${seq};`
-    connection.query(insertSql, (error, rows)=> {
-      if(error) console.log(error);
-      res.send();
-      connection.end();
-    });
-  });
-});
+app.put("/users/:seq", connect.update);
 
 // 삭제
-app.delete("/users/:seq", (req, res) => {
-  let seq = req.params.seq;
-    const connection = mysql.createConnection(dbconfig);
-    connection.connect(function(error) {
-        if(!error) {
-            console.log('Database is connected ... nn');
-        } else {
-            console.log('Error connecting databases ... nn' + error);
-        }
-
-        const insertSql = `DELETE FROM users WHERE seq = ${seq}`
-        connection.query(insertSql, (error, rows)=> {
-            if(error) console.log(error);
-            res.send(rows);
-            connection.end();
-        });
-    });
-});
+app.delete("/users/:seq", connect.delete);
 
 
 app.listen(app.get('port'), () => {
