@@ -6,6 +6,7 @@ const port = 3000;
 app.use(cors())
 // cors()안을 비워놓으면 모든 HTML요청을 허용.
 
+console.log('hi')
 app.get("/", function (req, res) {
   res.send("Hello World");
 });
